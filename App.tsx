@@ -13,7 +13,8 @@ import {
   Wand2,
   Terminal,
   Settings2,
-  Cpu
+  Cpu,
+  Flame
 } from 'lucide-react';
 import { OPERATIONS, getOperationById } from './services/operations';
 import { analyzeInput } from './services/geminiService';
@@ -94,36 +95,40 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col h-screen overflow-hidden bg-neutral-950 text-neutral-200">
       {/* Header */}
-      <header className="h-16 border-b border-slate-800 bg-slate-900/50 backdrop-blur-md flex items-center justify-between px-6 shrink-0">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <Cpu className="text-white w-5 h-5" />
+      <header className="h-16 border-b border-neutral-800 bg-neutral-900/80 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-50">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 chef-gradient rounded-lg flex items-center justify-center shadow-lg shadow-rose-500/20">
+            <Flame className="text-white w-5 h-5" />
           </div>
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-            NovaChef
-          </h1>
-          <span className="text-[10px] uppercase tracking-widest bg-slate-800 px-1.5 py-0.5 rounded text-slate-400 font-bold">
-            v1.0
-          </span>
+          <div className="flex flex-col -space-y-1">
+            <h1 className="text-xl font-black tracking-tighter text-white uppercase italic">
+              DarkChef
+            </h1>
+            <span className="text-[10px] text-rose-500 font-bold tracking-widest uppercase">
+              Pro Alchemy
+            </span>
+          </div>
         </div>
         
         <div className="flex items-center gap-4">
            <button 
             onClick={handleMagicAnalysis}
             disabled={isAnalyzing || !input}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                isAnalyzing ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20'
+            className={`flex items-center gap-2 px-5 py-2 rounded-full text-xs font-bold transition-all ${
+                isAnalyzing 
+                ? 'bg-neutral-800 text-neutral-500 cursor-not-allowed border border-neutral-700' 
+                : 'bg-rose-600 hover:bg-rose-500 text-white shadow-xl shadow-rose-900/20 active:scale-95'
             }`}
           >
             {isAnalyzing ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-slate-400 border-t-transparent"></div>
-            ) : <Sparkles className="w-4 h-4" />}
-            {isAnalyzing ? 'Analyzing...' : 'Smart Analysis'}
+              <div className="animate-spin rounded-full h-3 w-3 border-2 border-neutral-400 border-t-transparent"></div>
+            ) : <Sparkles className="w-3.5 h-3.5" />}
+            {isAnalyzing ? 'ANALYZING' : 'SMART DETECTION'}
           </button>
-          <div className="h-6 w-px bg-slate-800"></div>
-          <button className="p-2 hover:bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors">
+          <div className="h-6 w-px bg-neutral-800"></div>
+          <button className="p-2 hover:bg-neutral-800 rounded-lg text-neutral-500 hover:text-white transition-colors">
             <Settings2 className="w-5 h-5" />
           </button>
         </div>
@@ -133,16 +138,16 @@ const App: React.FC = () => {
       <main className="flex flex-1 overflow-hidden">
         
         {/* Sidebar: Operations */}
-        <aside className="w-72 border-r border-slate-800 bg-slate-900 flex flex-col shrink-0">
+        <aside className="w-72 border-r border-neutral-800 bg-neutral-900 flex flex-col shrink-0">
           <div className="p-4 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 group-focus-within:text-rose-400 transition-colors" />
               <input 
                 type="text"
-                placeholder="Search operations..."
+                placeholder="Find operation..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-800 border-none rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500/50 outline-none placeholder:text-slate-500"
+                className="w-full bg-neutral-950 border border-neutral-800 rounded-lg pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-rose-500/50 focus:border-rose-500/50 outline-none placeholder:text-neutral-600 transition-all"
               />
             </div>
             
@@ -151,8 +156,10 @@ const App: React.FC = () => {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat as any)}
-                  className={`text-[10px] px-2.5 py-1 rounded-full font-bold uppercase transition-colors ${
-                    activeCategory === cat ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30' : 'bg-slate-800 text-slate-500 border border-transparent'
+                  className={`text-[9px] px-2.5 py-1 rounded-md font-black uppercase transition-all tracking-tighter ${
+                    activeCategory === cat 
+                    ? 'bg-rose-600 text-white' 
+                    : 'bg-neutral-800 text-neutral-500 hover:text-neutral-300'
                   }`}
                 >
                   {cat}
@@ -166,64 +173,62 @@ const App: React.FC = () => {
               <button
                 key={op.id}
                 onClick={() => addToRecipe(op.id)}
-                className="w-full text-left p-3 rounded-xl hover:bg-slate-800 transition-all group mb-1"
+                className="w-full text-left p-3 rounded-lg hover:bg-neutral-800 transition-all group mb-1 border border-transparent hover:border-neutral-700"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-300 group-hover:text-white">{op.name}</span>
-                  <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-slate-400" />
+                  <span className="text-sm font-semibold text-neutral-400 group-hover:text-rose-400 transition-colors">{op.name}</span>
+                  <ChevronRight className="w-4 h-4 text-neutral-700 group-hover:text-rose-400 transition-all transform group-hover:translate-x-0.5" />
                 </div>
-                <p className="text-xs text-slate-500 mt-1 line-clamp-1">{op.description}</p>
+                <p className="text-[11px] text-neutral-600 mt-0.5 line-clamp-1 group-hover:text-neutral-500">{op.description}</p>
               </button>
             ))}
           </div>
         </aside>
 
         {/* Recipe Builder */}
-        <section className="w-80 border-r border-slate-800 bg-slate-900/50 flex flex-col shrink-0">
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between shrink-0">
+        <section className="w-80 border-r border-neutral-800 bg-neutral-900/30 flex flex-col shrink-0">
+          <div className="p-4 border-b border-neutral-800 flex items-center justify-between bg-neutral-900/40">
             <div className="flex items-center gap-2">
-              <Wand2 className="w-4 h-4 text-indigo-400" />
-              <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider">Active Recipe</h2>
+              <Wand2 className="w-4 h-4 text-rose-500" />
+              <h2 className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">The Recipe</h2>
             </div>
             {recipe.length > 0 && (
               <button 
                 onClick={() => setRecipe([])}
-                className="p-1.5 hover:bg-red-500/10 rounded text-red-500/70 hover:text-red-500 transition-colors"
+                className="px-2 py-1 hover:bg-rose-950/30 rounded text-rose-500/70 hover:text-rose-500 transition-colors text-[10px] font-bold uppercase"
               >
-                <Trash2 className="w-4 h-4" />
+                Clear
               </button>
             )}
           </div>
           
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-neutral-950/10">
             {recipe.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center px-6">
-                <div className="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center mb-4 text-slate-600">
-                  <Terminal className="w-6 h-6" />
-                </div>
-                <p className="text-sm text-slate-500">Your recipe is empty. Add operations from the sidebar to get started.</p>
+              <div className="h-full flex flex-col items-center justify-center text-center px-8 space-y-4 opacity-30">
+                <Terminal className="w-10 h-10 text-neutral-600" />
+                <p className="text-xs text-neutral-500 font-medium">Select operations to build your data forge.</p>
               </div>
             ) : (
               recipe.map((activeOp, index) => {
                 const op = getOperationById(activeOp.operationId);
                 return (
-                  <div key={activeOp.instanceId} className="bg-slate-800 border border-slate-700/50 rounded-xl overflow-hidden shadow-sm hover:border-slate-600 transition-colors">
-                    <div className="px-3 py-2.5 bg-slate-700/30 border-b border-slate-700/50 flex items-center justify-between">
+                  <div key={activeOp.instanceId} className="bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden shadow-2xl hover:border-neutral-700 transition-all">
+                    <div className="px-3 py-2 bg-neutral-800/50 border-b border-neutral-800 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] w-5 h-5 bg-slate-600 rounded-full flex items-center justify-center text-slate-300 font-mono font-bold">
+                        <span className="text-[9px] w-4 h-4 bg-rose-600/10 text-rose-500 border border-rose-500/20 rounded-sm flex items-center justify-center font-mono font-bold">
                           {index + 1}
                         </span>
-                        <span className="text-xs font-bold text-slate-200">{op?.name}</span>
+                        <span className="text-xs font-bold text-neutral-300 uppercase tracking-tight">{op?.name}</span>
                       </div>
                       <button 
                         onClick={() => removeFromRecipe(activeOp.instanceId)}
-                        className="text-slate-500 hover:text-red-400 p-1"
+                        className="text-neutral-600 hover:text-rose-500 p-1 transition-colors"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3 h-3" />
                       </button>
                     </div>
-                    <div className="p-2 bg-slate-900/40">
-                       <p className="text-[10px] text-slate-500 italic">No parameters required</p>
+                    <div className="px-3 py-2 bg-neutral-950/20">
+                       <p className="text-[10px] text-neutral-600 font-medium uppercase tracking-widest italic opacity-50">Standard Config</p>
                     </div>
                   </div>
                 );
@@ -231,41 +236,43 @@ const App: React.FC = () => {
             )}
           </div>
           
-          <div className="p-4 bg-slate-900 border-t border-slate-800">
+          <div className="p-4 bg-neutral-900 border-t border-neutral-800">
             <button 
               disabled={recipe.length === 0}
-              className="w-full flex items-center justify-center gap-2 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-sm font-bold text-indigo-400 transition-all"
+              className="w-full flex items-center justify-center gap-2 py-3 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-30 disabled:cursor-not-allowed rounded-lg text-xs font-black text-rose-500 transition-all border border-neutral-700 hover:border-rose-900/50 shadow-inner uppercase tracking-widest"
             >
-              <Play className="w-4 h-4 fill-indigo-400" />
-              RUN RECIPE
+              <Play className="w-3.5 h-3.5 fill-rose-500" />
+              Execute Sequence
             </button>
           </div>
         </section>
 
         {/* Data IO */}
-        <section className="flex-1 flex flex-col bg-slate-950 overflow-hidden">
+        <section className="flex-1 flex flex-col bg-black overflow-hidden relative">
           {/* AI Suggestions Overlay */}
           {analysis && (
-            <div className="m-4 p-4 bg-indigo-950/40 border border-indigo-500/30 rounded-xl flex flex-col gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="m-4 p-5 bg-neutral-900 border-l-4 border-l-rose-600 border border-neutral-800 rounded-r-xl flex flex-col gap-3 animate-in fade-in slide-in-from-top-4 duration-500 shadow-2xl z-40">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-indigo-400" />
-                  <span className="text-sm font-bold text-white">AI Detection: {analysis.format}</span>
-                  <span className="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30">
-                    {Math.round(analysis.confidence * 100)}% Match
+                  <div className="p-1 bg-rose-500/10 rounded">
+                    <Sparkles className="w-4 h-4 text-rose-500" />
+                  </div>
+                  <span className="text-sm font-black text-white uppercase tracking-tighter">AI SCAN DETECTED: {analysis.format}</span>
+                  <span className="text-[10px] font-black bg-rose-950 text-rose-400 px-2 py-0.5 rounded border border-rose-900/50">
+                    {Math.round(analysis.confidence * 100)}% MATCH
                   </span>
                 </div>
-                <button onClick={() => setAnalysis(null)} className="text-slate-400 hover:text-white">
+                <button onClick={() => setAnalysis(null)} className="text-neutral-600 hover:text-white transition-colors">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">{analysis.explanation}</p>
-              <div className="flex items-center gap-2">
+              <p className="text-xs text-neutral-400 leading-relaxed font-medium">{analysis.explanation}</p>
+              <div className="flex items-center gap-2 mt-1">
                  <button 
                   onClick={() => applySuggestedOperations(analysis.suggestedOperations)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500 hover:bg-indigo-400 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-indigo-500/20"
+                  className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded text-[10px] font-black uppercase transition-all shadow-lg shadow-rose-900/40 active:scale-95 tracking-widest"
                 >
-                  Apply {analysis.suggestedOperations.length} steps
+                  Apply Suggested Forge Sequence
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
@@ -274,50 +281,52 @@ const App: React.FC = () => {
 
           {/* Input Area */}
           <div className="flex-1 flex flex-col min-h-0">
-            <div className="h-10 border-b border-slate-800 bg-slate-900/30 px-4 flex items-center justify-between shrink-0">
+            <div className="h-10 border-b border-neutral-800 bg-neutral-900/20 px-4 flex items-center justify-between shrink-0">
                <div className="flex items-center gap-2">
-                <Code className="w-4 h-4 text-slate-500" />
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Input</span>
+                <Code className="w-3.5 h-3.5 text-neutral-600" />
+                <span className="text-[10px] font-black text-neutral-600 uppercase tracking-[0.2em]">Source Input</span>
                </div>
                <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-slate-600 font-mono">{input.length} chars</span>
+                  <span className="text-[10px] text-neutral-700 font-mono font-bold">{input.length.toLocaleString()} BYTES</span>
                </div>
             </div>
             <textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Paste or type your data here..."
-              className="flex-1 w-full p-6 bg-transparent resize-none outline-none mono text-sm text-slate-300 placeholder:text-slate-700 leading-relaxed scrollbar-thin"
+              placeholder="Inject raw data here..."
+              className="flex-1 w-full p-8 bg-transparent resize-none outline-none mono text-sm text-neutral-400 placeholder:text-neutral-800 leading-loose scrollbar-thin selection:bg-rose-500/30"
             />
           </div>
 
-          <div className="h-1 bg-slate-800"></div>
+          <div className="h-px bg-neutral-800"></div>
 
           {/* Output Area */}
-          <div className="flex-1 flex flex-col min-h-0 bg-slate-900/20">
-            <div className="h-10 border-b border-slate-800 bg-slate-900/30 px-4 flex items-center justify-between shrink-0">
+          <div className="flex-1 flex flex-col min-h-0 bg-neutral-900/5">
+            <div className="h-10 border-b border-neutral-800 bg-neutral-900/20 px-4 flex items-center justify-between shrink-0">
                <div className="flex items-center gap-2">
-                <Hash className="w-4 h-4 text-emerald-500" />
-                <span className="text-xs font-bold text-emerald-500 uppercase tracking-widest">Output</span>
+                <Hash className="w-3.5 h-3.5 text-rose-500" />
+                <span className="text-[10px] font-black text-rose-500 uppercase tracking-[0.2em]">Forge Output</span>
                </div>
                <div className="flex items-center gap-3">
-                  <span className="text-[10px] text-slate-600 font-mono">{output.length} chars</span>
+                  <span className="text-[10px] text-neutral-700 font-mono font-bold">{output.length.toLocaleString()} BYTES</span>
                   <button 
                     onClick={() => copyToClipboard(output)}
-                    className="flex items-center gap-1 text-[10px] font-bold text-slate-400 hover:text-white bg-slate-800/50 hover:bg-slate-700 px-2 py-1 rounded border border-slate-700/50 transition-all"
+                    className="flex items-center gap-1.5 text-[9px] font-black text-neutral-500 hover:text-white bg-neutral-800/50 hover:bg-neutral-700 px-3 py-1 rounded border border-neutral-700/50 transition-all uppercase tracking-widest"
                   >
                     <Copy className="w-3 h-3" />
-                    COPY
+                    EXTRACT
                   </button>
                </div>
             </div>
-            <div className="flex-1 p-6 mono text-sm overflow-auto scrollbar-thin">
+            <div className="flex-1 p-8 mono text-sm overflow-auto scrollbar-thin bg-black/40">
               {output ? (
-                <pre className="text-emerald-400 whitespace-pre-wrap leading-relaxed break-all">
+                <pre className="text-rose-400 whitespace-pre-wrap leading-relaxed break-all selection:bg-rose-500 selection:text-white">
                   {output}
                 </pre>
               ) : (
-                <p className="text-slate-700 italic">Result will appear here...</p>
+                <div className="h-full flex items-center justify-center opacity-10">
+                   <p className="text-neutral-500 italic uppercase tracking-[0.5em] font-black text-xs">Waiting for sequence</p>
+                </div>
               )}
             </div>
           </div>
@@ -325,19 +334,22 @@ const App: React.FC = () => {
       </main>
 
       {/* Footer / Status Bar */}
-      <footer className="h-8 border-t border-slate-800 bg-slate-900 flex items-center justify-between px-4 shrink-0 text-[10px] font-medium text-slate-500 uppercase tracking-wider">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span>System Ready</span>
+      <footer className="h-8 border-t border-neutral-800 bg-neutral-900 flex items-center justify-between px-6 shrink-0 text-[9px] font-bold text-neutral-600 uppercase tracking-widest">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse shadow-[0_0_8px_rgba(225,29,72,0.6)]"></div>
+            <span>Forge Active</span>
           </div>
-          <div className="h-3 w-px bg-slate-700"></div>
-          <span>API: Connected</span>
+          <div className="h-3 w-px bg-neutral-800"></div>
+          <span className="text-neutral-500">Security Layer: Encrypted</span>
         </div>
-        <div className="flex items-center gap-4">
-           <span>Model: Gemini-3-Flash</span>
-           <div className="h-3 w-px bg-slate-700"></div>
-           <span>© 2024 NovaLabs</span>
+        <div className="flex items-center gap-6">
+           <div className="flex items-center gap-1.5">
+             <Cpu className="w-3 h-3" />
+             <span>Core: Gemini Flash v3.0</span>
+           </div>
+           <div className="h-3 w-px bg-neutral-800"></div>
+           <span className="hover:text-rose-500 transition-colors cursor-default">DarkChef Protocol © 2024</span>
         </div>
       </footer>
     </div>
